@@ -1,0 +1,13 @@
+﻿################################################################################
+# 這個 .gitignore 檔案由 Microsoft(R) Visual Studio 自動建立。
+################################################################################
+
+/T4U_Pharmacy_API/.vs
+/T4U_Pharmacy_API/T4U_Pharmacy_Common_Model/obj
+/T4U_Pharmacy_API/T4U_Pharmacy_Common_Model/bin
+/T4U_Pharmacy_API/T4U_Pharmacy_Repository/obj
+/T4U_Pharmacy_API/T4U_Pharmacy_Repository/bin
+/T4U_Pharmacy_API/T4U_Pharmacy_Service/obj
+/T4U_Pharmacy_API/T4U_Pharmacy_Service/bin
+/T4U_Pharmacy_API/T4U_Pharmacy_Web_API/obj
+/T4U_Pharmacy_API/T4U_Pharmacy_Web_API/bin
