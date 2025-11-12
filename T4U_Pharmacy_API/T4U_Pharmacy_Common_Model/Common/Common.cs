@@ -12,9 +12,34 @@ namespace T4U_Pharmacy_Common_Model.Common
     public class CommonStruct
     {
         /// <summary>
+        /// 藥局口罩排序欄位
+        /// </summary>
+        public enum PharmacyMasksSortBy
+        {
+            /// <summary>
+            /// 口罩名稱
+            /// </summary>
+            Name = 0,
+            /// <summary>
+            /// 單價
+            /// </summary>
+            Price = 1
+        }
+
+        /// <summary>
         /// 排序方式
         /// </summary>
-        public readonly List<string> SortOrder = new List<string>() { "asc", "desc" };
+        public enum SortOrderEnum
+        {
+            /// <summary>
+            /// 升序排序
+            /// </summary>
+            Asc = 0,
+            /// <summary>
+            /// 降序排序
+            /// </summary>
+            Desc = 1
+        }
     }
     /// <summary>
     /// 系統設定KEY

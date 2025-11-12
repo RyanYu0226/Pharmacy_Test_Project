@@ -9,6 +9,7 @@ using T4U_Pharmacy_Repository.DBModels;
 using T4U_Pharmacy_Repository.Infrastructure;
 using T4U_Pharmacy_Repository.Interface;
 using T4U_Pharmacy_Service.BaseService;
+using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
 
 namespace T4U_Pharmacy_Service
 {
@@ -28,7 +29,7 @@ namespace T4U_Pharmacy_Service
         /// <param name="sortBy">排序欄位，只接受name、price</param>
         /// <param name="sortOrder">排序方式，只接受asc、desc</param>
         /// <returns></returns>
-        public async Task<PharmacyMasksViewModel> GetPharmacyMasksList(long pharmacyId, string sortBy = "name", string sortOrder = "asc")
+        public async Task<PharmacyMasksViewModel> GetPharmacyMasksList(long pharmacyId, PharmacyMasksSortBy sortBy = PharmacyMasksSortBy.Name, SortOrderEnum sortOrder = SortOrderEnum.Asc)
         {
             PharmacyMasksViewModel obj = new PharmacyMasksViewModel();
             obj.Result = true;
@@ -50,17 +51,16 @@ namespace T4U_Pharmacy_Service
                             StockQuantity = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity)
                         }
                         ).ToList();
-                    switch (sortBy?.ToLower())
+                    switch (sortBy)
                     {
-                        case "price":
-                            listDetail = sortOrder?.ToLower() == "desc"
+                        case PharmacyMasksSortBy.Price:
+                            listDetail = sortOrder == SortOrderEnum.Desc
                                 ? listDetail.OrderByDescending(n => n.Price).ToList()
                                 : listDetail.OrderBy(n => n.Price).ToList();
                             break;
 
-                        case "name":
-                        default:
-                            listDetail = sortOrder?.ToLower() == "desc"
+                        case PharmacyMasksSortBy.Name:
+                            listDetail = sortOrder == SortOrderEnum.Desc
                                 ? listDetail.OrderByDescending(n => n.Name).ToList()
                                 : listDetail.OrderBy(n => n.Name).ToList();
                             break;
