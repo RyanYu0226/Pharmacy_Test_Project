@@ -10,10 +10,10 @@ using T4U_Pharmacy_Service.BaseService;
 
 namespace T4U_Pharmacy_Service
 {
-    public class MarksService: BaseService<Mask>
+    public class MasksService: BaseService<Mask>
     {
         private IUnitOfWork _unitOfWork;
-        public MarksService(IUnitOfWork unitOfWork, IGenericRepository<Mask> repository)
+        public MasksService(IUnitOfWork unitOfWork, IGenericRepository<Mask> repository)
              : base(unitOfWork, repository)
         {
             _unitOfWork = unitOfWork;

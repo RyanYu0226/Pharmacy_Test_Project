@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace T4U_Pharmacy_Common_Model.ViewModel
 {
-    public class PharmacyViewModel
+    public class PharmacyViewModel: ResultViewModel
     {
         public List<PharmacyDetail> Data { get; set; }
     }

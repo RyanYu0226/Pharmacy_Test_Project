@@ -220,14 +220,14 @@ namespace T4U_Pharmacy_Service
                 _context.SystemConfigs.Add(new SystemConfig
                 {
                     Key = SystemConfigKey.USER_CASH_BALANCE_SETTLEMENT_TIME,
-                    Value = DateTime.Today.AddDays(1).ToString("yyyy/MM/dd"),
+                    Value = DateTime.Today.ToString("yyyy/MM/dd"),
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now
                 });
                 _context.SystemConfigs.Add(new SystemConfig
                 {
                     Key = SystemConfigKey.PHARMACY_STOCK_SETTLEMENT_TIME,
-                    Value = DateTime.Today.AddDays(1).ToString("yyyy/MM/dd"),
+                    Value = DateTime.Today.ToString("yyyy/MM/dd"),
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now
                 });

@@ -30,48 +30,57 @@ namespace T4U_Pharmacy_Service
         public async Task<PharmacyViewModel> GetPharmacies(string dayOfWeek, string hourTime)
         {
             PharmacyViewModel obj = new PharmacyViewModel();
-            var pharmacies = this.repository.GetAll();
-            if (!string.IsNullOrEmpty(dayOfWeek))
+            obj.Result = true;
+            try
             {
-                var iDayOfWeek = int.Parse(dayOfWeek);
-                pharmacies = pharmacies.Where(n => n.PharmacyOpeningHours.Any(o => o.Weekday == iDayOfWeek));
-            }
-
-            if(!string.IsNullOrEmpty(hourTime))
-            {
-                pharmacies = pharmacies.Where(
-                    n => n.PharmacyOpeningHours.Any(
-                        o => 
-                        (o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
-                        ||
-                        (o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
-                        )
-                );
-            }
-
-            var listDetail = pharmacies.Select(n => new { n.PharmacyId, n.Name, n.PharmacyOpeningHours });
-
-            var list = await listDetail.ToListAsync();
-            var details = new List<PharmacyDetail>();
-            foreach (var item in list)
-            {
-                var objDetail = new PharmacyDetail 
+                var pharmacies = this.repository.GetAll();
+                if (!string.IsNullOrEmpty(dayOfWeek))
                 {
-                    PharmacyId = item.PharmacyId,
-                    Name = item.Name,
-                    OpenTimeList = item.PharmacyOpeningHours.Select(
-                        n => new PharmacyOpenTimeDetail
-                        {
-                            WeekDaya = WeekDayMap[n.Weekday],
-                            OpenTime = n.OpenTime,
-                            CloseTime = n.CloseTime
-                        })
-                    .ToList()
-                };
-                details.Add(objDetail);
-            }
-            obj.Data = details;
+                    var iDayOfWeek = int.Parse(dayOfWeek);
+                    pharmacies = pharmacies.Where(n => n.PharmacyOpeningHours.Any(o => o.Weekday == iDayOfWeek));
+                }
 
+                if (!string.IsNullOrEmpty(hourTime))
+                {
+                    pharmacies = pharmacies.Where(
+                        n => n.PharmacyOpeningHours.Any(
+                            o =>
+                            (o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
+                            ||
+                            (o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
+                            )
+                    );
+                }
+
+                var listDetail = pharmacies.Select(n => new { n.PharmacyId, n.Name, n.PharmacyOpeningHours });
+
+                var list = await listDetail.ToListAsync();
+                var details = new List<PharmacyDetail>();
+                foreach (var item in list)
+                {
+                    var objDetail = new PharmacyDetail
+                    {
+                        PharmacyId = item.PharmacyId,
+                        Name = item.Name,
+                        OpenTimeList = item.PharmacyOpeningHours.Select(
+                            n => new PharmacyOpenTimeDetail
+                            {
+                                WeekDaya = WeekDayMap[n.Weekday],
+                                OpenTime = n.OpenTime,
+                                CloseTime = n.CloseTime
+                            })
+                        .ToList()
+                    };
+                    details.Add(objDetail);
+                }
+                obj.Data = details;
+            }
+            catch (Exception ex)
+            {
+                string message = "發生意外錯誤";
+                obj.Result = false;
+                obj.Message = message;
+            }
             return obj;
         }
 

@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 namespace T4U_Pharmacy_Common_Model.Common
 {
     /// <summary>
+    /// 常用資訊
+    /// </summary>
+    public class CommonStruct
+    {
+        /// <summary>
+        /// 排序方式
+        /// </summary>
+        public readonly List<string> SortOrder = new List<string>() { "asc", "desc" };
+    }
+    /// <summary>
     /// 系統設定KEY
     /// </summary>
     public class SystemConfigKey
