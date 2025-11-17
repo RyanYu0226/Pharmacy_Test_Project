@@ -7,10 +7,17 @@ using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
 
 namespace T4U_Pharmacy_Web_API.Controllers
 {
+    /// <summary>
+    /// 口罩
+    /// </summary>
     public class MasksController : BaseController
     {
         private PharmacyMasksService _pharmacyMasksService;
 
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="pharmacyMasksService"></param>
         public MasksController(PharmacyMasksService pharmacyMasksService)
         {
             _pharmacyMasksService = pharmacyMasksService;
@@ -29,5 +36,6 @@ namespace T4U_Pharmacy_Web_API.Controllers
             var data = await _pharmacyMasksService.GetPharmacyMasksList(pharmacyId, sortBy, sortOrder);
             return Ok(data);
         }
+                
     }
 }

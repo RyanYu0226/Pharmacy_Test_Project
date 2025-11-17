@@ -21,6 +21,14 @@ builder.Services.AddSwaggerGen(c =>
 
     // 告訴 Swagger 要載入 XML 註解
     c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    // 再加上共用 Model 專案的 XML
+    var xmlFileModel = "T4U_Pharmacy_Common_Model.xml";
+    var xmlPathModel = Path.Combine(AppContext.BaseDirectory, xmlFileModel);
+    if (File.Exists(xmlPathModel))
+    {
+        c.IncludeXmlComments(xmlPathModel);
+    }
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

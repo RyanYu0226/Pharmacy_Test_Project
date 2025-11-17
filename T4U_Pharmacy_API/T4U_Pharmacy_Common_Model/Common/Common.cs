@@ -40,6 +40,25 @@ namespace T4U_Pharmacy_Common_Model.Common
             /// </summary>
             Desc = 1
         }
+
+        /// <summary>
+        /// 口罩數量門檻類型
+        /// </summary>
+        public enum QuantityThresholdType
+        {
+            /// <summary>
+            /// 大於
+            /// </summary>
+            Above = 0,
+            /// <summary>
+            /// 低於
+            /// </summary>
+            Below = 1,
+            /// <summary>
+            /// 之間
+            /// </summary>
+            Between = 2
+        }
     }
     /// <summary>
     /// 系統設定KEY
