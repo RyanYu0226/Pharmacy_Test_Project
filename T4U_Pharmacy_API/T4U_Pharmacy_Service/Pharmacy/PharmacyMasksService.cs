@@ -14,6 +14,9 @@ using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
 
 namespace T4U_Pharmacy_Service
 {
+    /// <summary>
+    /// 藥局口罩Service
+    /// </summary>
     public class PharmacyMasksService: BaseService<PharmacyMask>
     {
         private IUnitOfWork _unitOfWork;

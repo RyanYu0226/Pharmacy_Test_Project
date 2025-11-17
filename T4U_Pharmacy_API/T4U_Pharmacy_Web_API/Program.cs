@@ -43,6 +43,9 @@ builder.Services.AddScoped<PharmacyService>();
 builder.Services.AddScoped<IGenericRepository<PharmacyMask>, GenericRepository<PharmacyMask>>();
 builder.Services.AddScoped<PharmacyMasksService>();
 
+builder.Services.AddScoped<IGenericRepository<PurchaseHistory>, GenericRepository<PurchaseHistory>>();
+builder.Services.AddScoped<PurchaseHistoryService>();
+
 builder.Services.AddScoped<DBService>();
 
 // 資料庫連線
