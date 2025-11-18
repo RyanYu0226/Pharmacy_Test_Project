@@ -40,11 +40,22 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<IGenericRepository<Pharmacy>, GenericRepository<Pharmacy>>();
 builder.Services.AddScoped<PharmacyService>();
 
+builder.Services.AddScoped<IGenericRepository<Mask>, GenericRepository<Mask>>();
+builder.Services.AddScoped<MasksService>();
+
 builder.Services.AddScoped<IGenericRepository<PharmacyMask>, GenericRepository<PharmacyMask>>();
 builder.Services.AddScoped<PharmacyMasksService>();
 
 builder.Services.AddScoped<IGenericRepository<PurchaseHistory>, GenericRepository<PurchaseHistory>>();
 builder.Services.AddScoped<PurchaseHistoryService>();
+
+builder.Services.AddScoped<IGenericRepository<SystemConfig>, GenericRepository<SystemConfig>>();
+builder.Services.AddScoped<SystemConfigService>();
+
+builder.Services.AddScoped<IGenericRepository<PharmacyMasksStockLog>, GenericRepository<PharmacyMasksStockLog>>();
+builder.Services.AddScoped<PharmacyMasksStockLogService>();
+
+builder.Services.AddScoped<PurchaseService>();
 
 builder.Services.AddScoped<DBService>();
 

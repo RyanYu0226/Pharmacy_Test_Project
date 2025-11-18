@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.ViewModel;
 using T4U_Pharmacy_Repository.DBModels;
 using T4U_Pharmacy_Repository.Infrastructure;
@@ -91,7 +92,7 @@ namespace T4U_Pharmacy_Service
         }
 
         /// <summary>
-        /// 取得指定時間內的購買金額前幾名客戶
+        /// 取得指定時間內的購買金額前幾名客戶檢驗
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
