@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.ViewModel;
 using T4U_Pharmacy_Service;
 using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
@@ -13,14 +14,16 @@ namespace T4U_Pharmacy_Web_API.Controllers
     public class MasksController : BaseController
     {
         private PharmacyMasksService _pharmacyMasksService;
+        private MaskHandleService _maskHandleService;
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="pharmacyMasksService"></param>
-        public MasksController(PharmacyMasksService pharmacyMasksService)
+        public MasksController(PharmacyMasksService pharmacyMasksService, MaskHandleService maskHandleService)
         {
             _pharmacyMasksService = pharmacyMasksService;
+            _maskHandleService = maskHandleService;
         }
 
         /// <summary>
@@ -36,6 +39,16 @@ namespace T4U_Pharmacy_Web_API.Controllers
             var data = await _pharmacyMasksService.GetPharmacyMasksList(pharmacyId, sortBy, sortOrder);
             return Ok(data);
         }
-                
+
+        /// <summary>
+        /// 更新藥局口罩庫存
+        /// </summary>
+        /// <param name="input">更新口罩庫存Input</param>
+        /// <returns></returns>
+        [HttpPut("v1/[controller]/UpdateMaskQuantity")]
+        public async Task<ActionResult<MaskDetailViewModel>> UpdateMaskQuantity([FromBody][Required]UpdateMaskInput input)
+        {
+            return await _maskHandleService.UpdateMaskQuantity(input);
+        }
     }
 }

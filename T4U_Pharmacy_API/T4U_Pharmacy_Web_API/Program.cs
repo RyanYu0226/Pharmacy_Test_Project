@@ -56,6 +56,7 @@ builder.Services.AddScoped<IGenericRepository<PharmacyMasksStockLog>, GenericRep
 builder.Services.AddScoped<PharmacyMasksStockLogService>();
 
 builder.Services.AddScoped<PurchaseHandleService>();
+builder.Services.AddScoped<MaskHandleService>();
 
 builder.Services.AddScoped<DBService>();
 
