@@ -10,11 +10,11 @@ namespace T4U_Pharmacy_Web_API.Controllers
 {
     public class PurchaseController : BaseController
     {
-        private PurchaseService _purchaseService;
+        private PurchaseHandleService _purchaseHandleService;
 
-        public PurchaseController(PurchaseService purchaseService)
+        public PurchaseController(PurchaseHandleService purchaseHandelService)
         {
-            _purchaseService = purchaseService;
+            _purchaseHandleService = purchaseHandelService;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace T4U_Pharmacy_Web_API.Controllers
         [HttpPost("v1/[controller]/InsertPurchaseHistory")]
         public async Task<ActionResult<ResultViewModel>> InsertPurchaseHistory([FromBody][Required] PharmacyOrdersInput input)
         {
-            return await _purchaseService.InsertPurchaseHistory(input);
+            return await _purchaseHandleService.InsertPurchaseHistory(input);
         }
     }
 }

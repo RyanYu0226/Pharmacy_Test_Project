@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace T4U_Pharmacy_Service
 {
-    public class PurchaseService
+    public class PurchaseHandleService
     {
         private CustomerService _customerService;
         private PharmacyService _pharmacyService;
@@ -28,7 +28,7 @@ namespace T4U_Pharmacy_Service
         /// <param name="masksService"></param>
         /// <param name="pharmacyMasksService"></param>
         /// <param name="purchaseHistoryService"></param>
-        public PurchaseService(CustomerService customerService, PharmacyService pharmacyService, MasksService masksService, PharmacyMasksService pharmacyMasksService, PurchaseHistoryService purchaseHistoryService, SystemConfigService systemConfigService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
+        public PurchaseHandleService(CustomerService customerService, PharmacyService pharmacyService, MasksService masksService, PharmacyMasksService pharmacyMasksService, PurchaseHistoryService purchaseHistoryService, SystemConfigService systemConfigService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
         {
             _customerService = customerService;
             _pharmacyService = pharmacyService;
