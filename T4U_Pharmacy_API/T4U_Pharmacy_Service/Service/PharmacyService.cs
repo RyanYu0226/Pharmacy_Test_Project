@@ -34,13 +34,13 @@ namespace T4U_Pharmacy_Service
             try
             {
                 var pharmacies = this.repository.GetAll();
-                if (!string.IsNullOrEmpty(dayOfWeek))
+                if (!string.IsNullOrEmpty(dayOfWeek) && string.IsNullOrEmpty(hourTime))
                 {
                     var iDayOfWeek = int.Parse(dayOfWeek);
                     pharmacies = pharmacies.Where(n => n.PharmacyOpeningHours.Any(o => o.Weekday == iDayOfWeek));
                 }
 
-                if (!string.IsNullOrEmpty(hourTime))
+                if (!string.IsNullOrEmpty(hourTime) && string.IsNullOrEmpty(dayOfWeek))
                 {
                     pharmacies = pharmacies.Where(
                         n => n.PharmacyOpeningHours.Any(
@@ -48,6 +48,19 @@ namespace T4U_Pharmacy_Service
                             (o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
                             ||
                             (o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
+                            )
+                    );
+                }
+
+                if (!string.IsNullOrEmpty(dayOfWeek) && !string.IsNullOrEmpty(hourTime))
+                {
+                    var iDayOfWeek = int.Parse(dayOfWeek);
+                    pharmacies = pharmacies.Where(
+                        n => n.PharmacyOpeningHours.Any(
+                            o =>
+                            (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
+                            ||
+                            (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
                             )
                     );
                 }
