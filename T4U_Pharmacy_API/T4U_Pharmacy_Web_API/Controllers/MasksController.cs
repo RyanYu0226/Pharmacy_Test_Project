@@ -15,15 +15,17 @@ namespace T4U_Pharmacy_Web_API.Controllers
     {
         private PharmacyMasksService _pharmacyMasksService;
         private MaskHandleService _maskHandleService;
+        private PharmacyMaskHandleService _pharmacyMaskHandleService;
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="pharmacyMasksService"></param>
-        public MasksController(PharmacyMasksService pharmacyMasksService, MaskHandleService maskHandleService)
+        public MasksController(PharmacyMasksService pharmacyMasksService, MaskHandleService maskHandleService, PharmacyMaskHandleService pharmacyMaskHandleService)
         {
             _pharmacyMasksService = pharmacyMasksService;
             _maskHandleService = maskHandleService;
+            _pharmacyMaskHandleService = pharmacyMaskHandleService;
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace T4U_Pharmacy_Web_API.Controllers
         [HttpGet("v1/[controller]/GetPharmacyMasksList")]
         public async Task<ActionResult<PharmacyMasksViewModel>> GetPharmacyMasksList([FromQuery][Required] long pharmacyId, [FromQuery][Required] PharmacyMasksSortBy sortBy = PharmacyMasksSortBy.Name, [FromQuery][Required] SortOrderEnum sortOrder = SortOrderEnum.Asc)
         {
-            var data = await _pharmacyMasksService.GetPharmacyMasksList(pharmacyId, sortBy, sortOrder);
+            var data = await _pharmacyMaskHandleService.GetPharmacyMasksList(pharmacyId, sortBy, sortOrder);
             return Ok(data);
         }
 

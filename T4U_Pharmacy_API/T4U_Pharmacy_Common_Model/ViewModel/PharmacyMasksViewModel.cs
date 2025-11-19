@@ -19,6 +19,11 @@ namespace T4U_Pharmacy_Common_Model.ViewModel
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// 剩餘金額
+        /// </summary>
+        public decimal CashBalance {  get; set; }
+
+        /// <summary>
         /// 列表資料
         /// </summary>
         public List<PharmacyMasksDetail>? Data { get; set; }

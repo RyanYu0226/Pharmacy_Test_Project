@@ -203,7 +203,7 @@ namespace T4U_Pharmacy_Service
             string strUserCashEndDate = _systemConfigService.GetValue(SystemConfigService.USER_CASH_BALANCE_SETTLEMENT_TIME);
             if (!string.IsNullOrEmpty(strUserCashEndDate))
             {
-                var dtUserCashEndDate = DateTime.Parse(strUserCashEndDate).AddDays(1);
+                var dtUserCashEndDate = DateTime.Parse(strUserCashEndDate);
                 var purchaseHistories = _purchaseHistoryService.GetAll().Where(n => n.CustomerId == customerId && n.TransactionDatetime > dtUserCashEndDate).ToList();
                 var sumTotal = purchaseHistories.Sum(n => n.TransactionAmount * n.TransactionQuantity);
                 currentCash = customer.CurrentCashBalance - sumTotal;

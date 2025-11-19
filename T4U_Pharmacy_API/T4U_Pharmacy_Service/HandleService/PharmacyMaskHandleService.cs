@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.Common;
 using T4U_Pharmacy_Common_Model.ViewModel;
+using T4U_Pharmacy_Repository.DBModels;
+using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
 
 namespace T4U_Pharmacy_Service
 {
@@ -13,16 +16,78 @@ namespace T4U_Pharmacy_Service
     {
         private PharmacyService _pharmacyService;
         private MasksService _masksService;
+        private PharmacyMasksService _pharmacyMasksService;
+        private PharmacyMasksStockLogService _pharmacyMasksStockLogService;
+        private SystemConfigService _systemConfigService;
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="pharmacyService"></param>
         /// <param name="masksService"></param>
-        public PharmacyMaskHandleService(PharmacyService pharmacyService, MasksService masksService)
+        public PharmacyMaskHandleService(PharmacyService pharmacyService, MasksService masksService, PharmacyMasksService pharmacyMasksService, PharmacyMasksStockLogService pharmacyMasksStockLogService, SystemConfigService systemConfigService)
         {
             _masksService = masksService;
             _pharmacyService = pharmacyService;
+            _pharmacyMasksService = pharmacyMasksService;
+            _pharmacyMasksStockLogService = pharmacyMasksStockLogService;
+            _systemConfigService = systemConfigService;
+        }
+
+        /// <summary>
+        /// 取得指定藥局下的口罩資料
+        /// </summary>
+        /// <param name="pharmacyId">藥局ID</param>
+        /// <param name="sortBy">排序欄位，只接受name、price</param>
+        /// <param name="sortOrder">排序方式，只接受asc、desc</param>
+        /// <returns></returns>
+        public async Task<PharmacyMasksViewModel> GetPharmacyMasksList(long pharmacyId, PharmacyMasksSortBy sortBy = PharmacyMasksSortBy.Name, SortOrderEnum sortOrder = SortOrderEnum.Asc)
+        {
+            PharmacyMasksViewModel obj = new PharmacyMasksViewModel();
+            obj.Result = true;
+            try
+            {
+                var pharmacies = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId);
+                var list = await pharmacies.Select(n => new { n.Masks, n.Pharmacy, n.PharmacyMasksStockLogs, n.Price }).ToListAsync();
+
+                if (list.Count > 0)
+                {
+                    obj.PharmacyId = list.FirstOrDefault().Pharmacy.PharmacyId;
+                    obj.Name = list.FirstOrDefault().Pharmacy.Name;
+                    obj.CashBalance = GetPharmacyCurrentCashBalance(pharmacyId);
+                    var listDetail = list.Select(
+                        n => new PharmacyMasksDetail
+                        {
+                            MasksId = n.Masks.MasksId,
+                            Name = n.Masks.Name,
+                            Price = n.Price,
+                            StockQuantity = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity)
+                        }
+                        ).ToList();
+                    switch (sortBy)
+                    {
+                        case PharmacyMasksSortBy.Price:
+                            listDetail = sortOrder == SortOrderEnum.Desc
+                                ? listDetail.OrderByDescending(n => n.Price).ToList()
+                                : listDetail.OrderBy(n => n.Price).ToList();
+                            break;
+
+                        case PharmacyMasksSortBy.Name:
+                            listDetail = sortOrder == SortOrderEnum.Desc
+                                ? listDetail.OrderByDescending(n => n.Name).ToList()
+                                : listDetail.OrderBy(n => n.Name).ToList();
+                            break;
+                    }
+                    obj.Data = listDetail;
+                }
+            }
+            catch (Exception ex)
+            {
+                string message = "發生意外錯誤";
+                obj.Result = false;
+                obj.Message = message;
+            }
+            return obj;
         }
 
         /// <summary>
@@ -96,6 +161,172 @@ namespace T4U_Pharmacy_Service
             return result;
         }
 
+        /// <summary>
+        /// 更新藥局多個口罩價格與庫存
+        /// </summary>
+        /// <param name="pharmacyId"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<PharmacyMasksViewModel> UpdateMaskData(long pharmacyId, UpdateMultiPharmacyMaskInput input)
+        {
+            PharmacyMasksViewModel result = new PharmacyMasksViewModel();
+            result.Message = ValidUpdateMaskData(pharmacyId, input);
+            result.Result = true;
+            if (string.IsNullOrEmpty(result.Message))
+            {
+                var pharmacy = _pharmacyService.Get(n => n.PharmacyId == pharmacyId);
+                var maskNameList = input.Masks.Select(n => n.MaskName).Distinct().ToList();
+                var masks = _masksService.GetAll().Where(n => maskNameList.Contains(n.Name))
+                    .Select(n => new { n.MasksId, n.Name })
+                    .ToList();
+                var pharmacyMasks = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId)
+                    .Select(n => new { n.PharmacyMasksId ,n.Masks.Name, Stock = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) })
+                    .ToList();
+                foreach (var updateMask in input.Masks)
+                {
+                    var matchPharmacyMask = pharmacyMasks.FirstOrDefault(n => n.Name == updateMask.MaskName);
+                    long targetStock = 0;
+                    long targetPharmacyMaskId = 0;
+                    if (matchPharmacyMask != null)
+                    {
+                        targetStock = updateMask.Stock - matchPharmacyMask.Stock;
+                        targetPharmacyMaskId = matchPharmacyMask.PharmacyMasksId;
+                    }
+                    else
+                    {
+                        targetStock = updateMask.Stock;
+                        var matchMask = masks.FirstOrDefault(n => n.Name == updateMask.MaskName);
+                        long targetMaskId = 0;
+                        if(matchMask != null)
+                        {
+                            targetMaskId = matchMask.MasksId;
+                        }
+                        else
+                        {
+                            var mask = new Mask()
+                            {
+                                Name = updateMask.MaskName
+                            };
+                            var addMaskResult = _masksService.Add(mask);
+                            if(addMaskResult > 0)
+                            {
+                                targetMaskId = mask.MasksId;
+                            }
+                        }
+                        if(targetMaskId != 0)
+                        {
+                            var pharmacyMask = new PharmacyMask()
+                            {
+                                PharmacyId = pharmacyId,
+                                MasksId = targetMaskId,
+                                Price = updateMask.Price,
+                                CreatedDate = DateTime.Now,
+                                ModifiedDate = DateTime.Now
+                            };
+                            var addPharmacyMaskResult = _pharmacyMasksService.Add(pharmacyMask);
+                            if(addPharmacyMaskResult > 0)
+                            {
+                                targetPharmacyMaskId = pharmacyMask.PharmacyMasksId;
+                            }
+                        }
+                    }
+                    if(targetPharmacyMaskId != 0)
+                    {
+                        var targetPharmacyMask = _pharmacyMasksService.Get(n => n.PharmacyMasksId == targetPharmacyMaskId);
+                        targetPharmacyMask.Price = updateMask.Price;
+                        targetPharmacyMask.ModifiedDate = DateTime.Now;
+                        if (_pharmacyMasksService.Update(targetPharmacyMask) > 0)
+                        {
+                            var stock = new PharmacyMasksStockLog()
+                            {
+                                PharmacyMasksId = targetPharmacyMaskId,
+                                StockQuantity = targetStock,
+                                Price = updateMask.Price,
+                                CreatedDate = DateTime.Now,
+                            };
+                            _pharmacyMasksStockLogService.Add(stock);
+                        }
+                    }
+                }
+                result = await GetPharmacyMasksList(pharmacyId);
+            }
+            else
+            {
+                result.Result = false;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 更新藥局多個口罩價格與庫存檢驗
+        /// </summary>
+        /// <param name="pharmacyId"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private string ValidUpdateMaskData(long pharmacyId, UpdateMultiPharmacyMaskInput input)
+        {
+            var pharmacy = _pharmacyService.Get(n => n.PharmacyId == pharmacyId);
+            if (pharmacy == null)
+            {
+                return string.Format("藥局不存在，藥局ID：{0}", pharmacyId);
+            }
+            //檢查調整價錢庫存後，剩餘金額是否不足
+            var maskNameList = input.Masks.Select(n => n.MaskName).Distinct().ToList();
+            var pharmacyMasks = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId)
+                .Select(n => new { n.Masks.Name, Stock = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) })
+                .ToList();
+            var currentCashBalance = GetPharmacyCurrentCashBalance(pharmacyId);
+            decimal totalCash = 0;
+            foreach(var updateMask in input.Masks)
+            {
+                var matchMask = pharmacyMasks.FirstOrDefault(n => n.Name == updateMask.MaskName);
+                if (matchMask != null)
+                {
+                    var targetStock = updateMask.Stock - matchMask.Stock;
+                    totalCash += targetStock * -updateMask.Price;
+                }
+                else
+                {
+                    totalCash += updateMask.Stock * -updateMask.Price;
+                }
+            }
+            if (currentCashBalance + totalCash < 0)
+            {
+                return string.Format("藥局剩餘金額，無法負荷此庫存量，目前剩餘金額：{0}，此次需花費金額：{1}", currentCashBalance, -totalCash);
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// 取得藥局目前剩餘金額
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        public decimal GetPharmacyCurrentCashBalance(long pharmacyId)
+        {
+            decimal currentCash = 0;
+            var pharmacy = this._pharmacyService.Get(n => n.PharmacyId == pharmacyId);
+            string strUserCashEndDate = _systemConfigService.GetValue(SystemConfigService.PHARMACY_STOCK_SETTLEMENT_TIME);
+            if (!string.IsNullOrEmpty(strUserCashEndDate))
+            {
+                var dtUserCashEndDate = DateTime.Parse(strUserCashEndDate);
+                var stockList = _pharmacyMasksStockLogService.GetAll().Where(n => n.PharmacyMasks.PharmacyId == pharmacyId && n.CreatedDate > dtUserCashEndDate).ToList();
+                var sumTotal = stockList.Sum(n => -n.StockQuantity * n.Price);
+                currentCash = pharmacy.CurrentCashBalance + sumTotal;
+            }
+            else
+            {
+                currentCash = pharmacy.CurrentCashBalance;
+            }
+            return currentCash;
+        }
+
+        /// <summary>
+        /// 計算關聯性
+        /// </summary>
+        /// <param name="keyword">關鍵字</param>
+        /// <param name="target">目標文字</param>
+        /// <returns></returns>
         private double CalculateRelevance(string keyword, string target)
         {
             if (string.IsNullOrWhiteSpace(keyword) || string.IsNullOrWhiteSpace(target))
@@ -138,8 +369,8 @@ namespace T4U_Pharmacy_Service
         /// <summary>
         /// 距離函數
         /// </summary>
-        /// <param name="s"></param>
-        /// <param name="t"></param>
+        /// <param name="s">關鍵字</param>
+        /// <param name="t">目標文字</param>
         /// <returns></returns>
         public int Levenshtein(string s, string t)
         {

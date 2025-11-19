@@ -38,6 +38,7 @@ namespace T4U_Pharmacy_Service
             string usersJsonPath,
             bool clearExistingData = false)
         {
+            var dtNow = DateTime.Today;
             var result = new ResultViewModel();
             if (clearExistingData)
             {
@@ -96,8 +97,9 @@ namespace T4U_Pharmacy_Service
                         {
                             Name = p.name,
                             CashBalance = p.cashBalance,
-                            CreatedDate = DateTime.Now,
-                            ModifiedDate = DateTime.Now
+                            CurrentCashBalance = p.cashBalance,
+                            CreatedDate = dtNow,
+                            ModifiedDate = dtNow
                         };
 
                     if (pharmacy.PharmacyId == 0)
@@ -146,8 +148,8 @@ namespace T4U_Pharmacy_Service
                                 Pharmacy = pharmacy,
                                 Masks = mask,
                                 Price = m.price,
-                                CreatedDate = DateTime.Now,
-                                ModifiedDate = DateTime.Now
+                                CreatedDate = dtNow,
+                                ModifiedDate = dtNow
                             };
 
                         if (pharmacyMask.PharmacyMasksId == 0)
@@ -158,7 +160,7 @@ namespace T4U_Pharmacy_Service
                             PharmacyMasks = pharmacyMask,
                             StockQuantity = m.stockQuantity,
                             Price = m.price,
-                            CreatedDate = DateTime.Now
+                            CreatedDate = dtNow
                         });
 
                         await _context.SaveChangesAsync();
@@ -177,8 +179,8 @@ namespace T4U_Pharmacy_Service
                             Name = u.name,
                             CashBalance = u.cashBalance,
                             CurrentCashBalance = u.cashBalance,
-                            CreatedDate = DateTime.Now,
-                            ModifiedDate = DateTime.Now
+                            CreatedDate = dtNow,
+                            ModifiedDate = dtNow
                         };
                     if (customer.CustomerId == 0)
                         _context.Customers.Add(customer);
@@ -204,7 +206,7 @@ namespace T4U_Pharmacy_Service
                                 TransactionAmount = ph.transactionAmount,
                                 TransactionQuantity = ph.transactionQuantity,
                                 TransactionDatetime = DateTime.Parse(ph.transactionDatetime),
-                                CreatedDate = DateTime.Now
+                                CreatedDate = dtNow
                             });
                         }
                         else
@@ -221,15 +223,15 @@ namespace T4U_Pharmacy_Service
                 {
                     Key = SystemConfigKey.USER_CASH_BALANCE_SETTLEMENT_TIME,
                     Value = DateTime.Today.ToString("yyyy/MM/dd"),
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now
+                    CreatedDate = dtNow,
+                    ModifiedDate = dtNow
                 });
                 _context.SystemConfigs.Add(new SystemConfig
                 {
                     Key = SystemConfigKey.PHARMACY_STOCK_SETTLEMENT_TIME,
                     Value = DateTime.Today.ToString("yyyy/MM/dd"),
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now
+                    CreatedDate = dtNow,
+                    ModifiedDate = dtNow
                 });
 
                 await _context.SaveChangesAsync();

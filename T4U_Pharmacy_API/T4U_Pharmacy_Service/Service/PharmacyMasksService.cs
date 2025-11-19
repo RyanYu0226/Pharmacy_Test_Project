@@ -28,61 +28,6 @@ namespace T4U_Pharmacy_Service
         }
 
         /// <summary>
-        /// 取得指定藥局下的口罩資料
-        /// </summary>
-        /// <param name="pharmacyId">藥局ID</param>
-        /// <param name="sortBy">排序欄位，只接受name、price</param>
-        /// <param name="sortOrder">排序方式，只接受asc、desc</param>
-        /// <returns></returns>
-        public async Task<PharmacyMasksViewModel> GetPharmacyMasksList(long pharmacyId, PharmacyMasksSortBy sortBy = PharmacyMasksSortBy.Name, SortOrderEnum sortOrder = SortOrderEnum.Asc)
-        {
-            PharmacyMasksViewModel obj = new PharmacyMasksViewModel();
-            obj.Result = true;
-            try
-            {
-                var pharmacies = this.repository.GetAll().Where(n => n.PharmacyId == pharmacyId);
-                var list = await pharmacies.Select(n => new { n.Masks, n.Pharmacy, n.PharmacyMasksStockLogs, n.Price }).ToListAsync();
-
-                if(list.Count > 0)
-                {
-                    obj.PharmacyId = list.FirstOrDefault().Pharmacy.PharmacyId;
-                    obj.Name = list.FirstOrDefault().Pharmacy.Name;
-                    var listDetail = list.Select(
-                        n => new PharmacyMasksDetail 
-                        {
-                            MasksId = n.Masks.MasksId,
-                            Name = n.Masks.Name,
-                            Price = n.Price,
-                            StockQuantity = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity)
-                        }
-                        ).ToList();
-                    switch (sortBy)
-                    {
-                        case PharmacyMasksSortBy.Price:
-                            listDetail = sortOrder == SortOrderEnum.Desc
-                                ? listDetail.OrderByDescending(n => n.Price).ToList()
-                                : listDetail.OrderBy(n => n.Price).ToList();
-                            break;
-
-                        case PharmacyMasksSortBy.Name:
-                            listDetail = sortOrder == SortOrderEnum.Desc
-                                ? listDetail.OrderByDescending(n => n.Name).ToList()
-                                : listDetail.OrderBy(n => n.Name).ToList();
-                            break;
-                    }
-                    obj.Data = listDetail;
-                }
-            }
-            catch (Exception ex)
-            {
-                string message = "發生意外錯誤";
-                obj.Result = false;
-                obj.Message = message;
-            }
-            return obj;
-        }
-
-        /// <summary>
         /// 查詢符合查詢條件的藥局+口罩資料
         /// </summary>
         /// <param name="priceMin">口罩價格區間下限</param>

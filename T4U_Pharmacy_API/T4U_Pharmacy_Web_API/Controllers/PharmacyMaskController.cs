@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Formats.Asn1;
+using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.Common;
 using T4U_Pharmacy_Common_Model.ViewModel;
 using T4U_Pharmacy_Service;
@@ -36,7 +38,21 @@ namespace T4U_Pharmacy_Web_API.Controllers
         [HttpGet("v1/[controller]/SearchPharmacyMaskByKeyword")]
         public async Task<ActionResult<PharmacyMaskSearchResultViewModel>> SearchPharmacyMaskByKeyword([FromQuery][Required]string keyword, [FromQuery][Required]PharmacyMaskSearchType pharmacyMaskSearchType = PharmacyMaskSearchType.All)
         {
-            return await _pharmacyMaskHandleService.SearchPharmacyMaskByKeyword(keyword, pharmacyMaskSearchType);
+            var result = await _pharmacyMaskHandleService.SearchPharmacyMaskByKeyword(keyword, pharmacyMaskSearchType);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 更新藥局口罩價格庫存
+        /// </summary>
+        /// <param name="pharmacyId">藥局ID</param>
+        /// <param name="input">口罩資訊</param>
+        /// <returns></returns>
+        [HttpPost("v1/[controller]/UpdateMaskData")]
+        public async Task<ActionResult<PharmacyMasksViewModel>> UpdateMaskData([FromQuery][Required]long pharmacyId, [FromBody][Required]UpdateMultiPharmacyMaskInput input)
+        {
+            var result = await _pharmacyMaskHandleService.UpdateMaskData(pharmacyId, input);
+            return Ok(result);
         }
     }
 }
