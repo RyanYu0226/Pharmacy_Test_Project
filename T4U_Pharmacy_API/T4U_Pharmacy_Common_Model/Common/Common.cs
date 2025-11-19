@@ -74,4 +74,23 @@ namespace T4U_Pharmacy_Common_Model.Common
         /// </summary>
         public const string PHARMACY_STOCK_SETTLEMENT_TIME = "PHARMACY_STOCK_SETTLEMENT_TIME";
     }
+
+    /// <summary>
+    /// 藥局口罩搜尋類型
+    /// </summary>
+    public enum PharmacyMaskSearchType
+    {
+        /// <summary>
+        /// 全部
+        /// </summary>
+        All = 0,
+        /// <summary>
+        /// 藥局
+        /// </summary>
+        Pharmacy = 1,
+        /// <summary>
+        /// 口罩
+        /// </summary>
+        Mask = 2
+    }
 }

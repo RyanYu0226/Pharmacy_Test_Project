@@ -57,6 +57,7 @@ builder.Services.AddScoped<PharmacyMasksStockLogService>();
 
 builder.Services.AddScoped<PurchaseHandleService>();
 builder.Services.AddScoped<MaskHandleService>();
+builder.Services.AddScoped<PharmacyMaskHandleService>();
 
 builder.Services.AddScoped<DBService>();
 
