@@ -26,7 +26,10 @@ namespace T4U_Pharmacy_Web_API_UnitTest
         private PharmacyService _pharmacyService;
 
         #region Core Test Cases
-
+        /// <summary>
+        /// 取得全部結果
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task GetPharmacies_NoFilters_ReturnsAllPharmacies()
         {
@@ -44,6 +47,10 @@ namespace T4U_Pharmacy_Web_API_UnitTest
             Assert.Equal(2, result.Data.Count);
         }
 
+        /// <summary>
+        /// 取得特定時段
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task GetPharmacies_FilterByTime_ReturnsCorrectPharmacies()
         {
@@ -73,6 +80,10 @@ namespace T4U_Pharmacy_Web_API_UnitTest
             Assert.Equal("藥局B", earlyResult.Data[0].Name);
         }
 
+        /// <summary>
+        /// 取得特定日的特定時段
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task GetPharmacies_NoMatchingPharmacies_ReturnsEmptyList()
         {
@@ -89,6 +100,10 @@ namespace T4U_Pharmacy_Web_API_UnitTest
             Assert.Empty(result.Data);
         }
 
+        /// <summary>
+        /// 測試無資料
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task GetPharmacies_EmptyDatabase_ReturnsEmptyList()
         {
@@ -105,6 +120,10 @@ namespace T4U_Pharmacy_Web_API_UnitTest
             Assert.Empty(result.Data);
         }
 
+        /// <summary>
+        /// 測試Exception
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task GetPharmacies_RepositoryThrowsException_ReturnsFalseResult()
         {

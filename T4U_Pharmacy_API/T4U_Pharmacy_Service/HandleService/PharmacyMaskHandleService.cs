@@ -44,13 +44,13 @@ namespace T4U_Pharmacy_Service
             {
                 var pharmacies = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId);
                 var list = await pharmacies.Select(n => new { n.Masks, n.Pharmacy, n.PharmacyMasksStockLogs, n.Price }).ToListAsync();
-
+                var listDetail = new List<PharmacyMasksDetail>();
                 if (list.Count > 0)
                 {
                     obj.PharmacyId = list.FirstOrDefault().Pharmacy.PharmacyId;
                     obj.Name = list.FirstOrDefault().Pharmacy.Name;
                     obj.CashBalance = GetPharmacyCurrentCashBalance(pharmacyId);
-                    var listDetail = list.Select(
+                    listDetail = list.Select(
                         n => new PharmacyMasksDetail
                         {
                             MasksId = n.Masks.MasksId,
@@ -73,8 +73,8 @@ namespace T4U_Pharmacy_Service
                                 : listDetail.OrderBy(n => n.Name).ToList();
                             break;
                     }
-                    obj.Data = listDetail;
                 }
+                obj.Data = listDetail;
             }
             catch (Exception ex)
             {
@@ -265,6 +265,11 @@ namespace T4U_Pharmacy_Service
             {
                 return string.Format("藥局不存在，藥局ID：{0}", pharmacyId);
             }
+            //Mask至少要有一筆
+            if(input.Masks == null || input.Masks.Count == 0)
+            {
+                return string.Format("口罩至少要有一筆資料");
+            }
             //檢查調整價錢庫存後，剩餘金額是否不足
             var maskNameList = input.Masks.Select(n => n.MaskName).Distinct().ToList();
             var pharmacyMasks = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId)
@@ -288,6 +293,26 @@ namespace T4U_Pharmacy_Service
             if (currentCashBalance + totalCash < 0)
             {
                 return string.Format("藥局剩餘金額，無法負荷此庫存量，目前剩餘金額：{0}，此次需花費金額：{1}", currentCashBalance, -totalCash);
+            }
+            //檢驗庫存和金額不應該為負數
+            foreach (var updateMask in input.Masks)
+            {
+                if(updateMask.Price < 0)
+                {
+                    return string.Format("金額不應該為負數，MaskName:{0}", updateMask.MaskName);
+                }
+                if(updateMask.Stock < 0)
+                {
+                    return string.Format("庫存不應該為負數，MaskName:{0}", updateMask.MaskName);
+                }
+            }
+            //檢驗同一個口罩名稱只能出現一次
+            foreach(var updateMask in input.Masks)
+            {
+                if(input.Masks.Where(n => n.MaskName == updateMask.MaskName).Count() > 1)
+                {
+                    return string.Format("口罩不能重複，MaskName:{0}", updateMask.MaskName);
+                }
             }
             return "";
         }
