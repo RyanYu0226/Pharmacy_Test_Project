@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.Common;
 using T4U_Pharmacy_Common_Model.ViewModel;
