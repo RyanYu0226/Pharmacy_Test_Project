@@ -13,7 +13,6 @@ namespace T4U_Pharmacy_Service
     public class MaskHandleService
     {
         private PharmacyService _pharmacyService;
-        private MasksService _masksService;
         private PharmacyMasksService _pharmacyMasksService;
         private PharmacyMasksStockLogService _pharmacyMasksStockLogService;
 
@@ -21,13 +20,11 @@ namespace T4U_Pharmacy_Service
         /// 初始化
         /// </summary>
         /// <param name="pharmacyService"></param>
-        /// <param name="masksService"></param>
         /// <param name="pharmacyMasksService"></param>
         /// <param name="pharmacyMasksStockLogService"></param>
-        public MaskHandleService(PharmacyService pharmacyService, MasksService masksService, PharmacyMasksService pharmacyMasksService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
+        public MaskHandleService(PharmacyService pharmacyService, PharmacyMasksService pharmacyMasksService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
         {
             _pharmacyService = pharmacyService;
-            _masksService = masksService;
             _pharmacyMasksService = pharmacyMasksService;
             _pharmacyMasksStockLogService = pharmacyMasksStockLogService;
         }    
