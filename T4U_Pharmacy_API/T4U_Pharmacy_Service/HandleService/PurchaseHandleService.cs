@@ -14,7 +14,6 @@ namespace T4U_Pharmacy_Service
     {
         private CustomerService _customerService;
         private PharmacyService _pharmacyService;
-        private MasksService _masksService;
         private PharmacyMasksService _pharmacyMasksService;
         private PurchaseHistoryService _purchaseHistoryService;
         private SystemConfigService _systemConfigService;
@@ -28,11 +27,10 @@ namespace T4U_Pharmacy_Service
         /// <param name="masksService"></param>
         /// <param name="pharmacyMasksService"></param>
         /// <param name="purchaseHistoryService"></param>
-        public PurchaseHandleService(CustomerService customerService, PharmacyService pharmacyService, MasksService masksService, PharmacyMasksService pharmacyMasksService, PurchaseHistoryService purchaseHistoryService, SystemConfigService systemConfigService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
+        public PurchaseHandleService(CustomerService customerService, PharmacyService pharmacyService, PharmacyMasksService pharmacyMasksService, PurchaseHistoryService purchaseHistoryService, SystemConfigService systemConfigService, PharmacyMasksStockLogService pharmacyMasksStockLogService)
         {
             _customerService = customerService;
             _pharmacyService = pharmacyService;
-            _masksService = masksService;
             _pharmacyMasksService = pharmacyMasksService;
             _purchaseHistoryService = purchaseHistoryService;
             _systemConfigService = systemConfigService;
