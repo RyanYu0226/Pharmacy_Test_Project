@@ -1,0 +1,11 @@
+services:
+  t4u_pharmacy_web_api:
+    image: t4u_pharmacy_web_api:latest
+    container_name: t4u_pharmacy_web_api
+    restart: always
+    environment:
+      - TZ=Asia/Taipei
+    networks:
+      - common_net
+networks:
+  common_net:
