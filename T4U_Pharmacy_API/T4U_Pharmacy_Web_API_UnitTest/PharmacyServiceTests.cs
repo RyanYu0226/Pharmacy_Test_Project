@@ -95,7 +95,7 @@ namespace T4U_Pharmacy_Web_API_UnitTest
             var unitOfWork = new UnitOfWork(context);
             _pharmacyService = new PharmacyService(unitOfWork, repository);
 
-            var result = await _pharmacyService.GetPharmacies("6", "23:00"); // 星期六夜晚
+            var result = await _pharmacyService.GetPharmacies("6", "23:00", T4U_Pharmacy_Common_Model.Common.CommonStruct.QueryType.And); // 星期六夜晚
             Assert.True(result.Result);
             Assert.Empty(result.Data);
         }
