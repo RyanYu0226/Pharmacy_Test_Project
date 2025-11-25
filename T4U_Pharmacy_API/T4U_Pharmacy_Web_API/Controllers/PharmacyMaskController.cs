@@ -34,11 +34,13 @@ namespace T4U_Pharmacy_Web_API.Controllers
         /// 藥局，Pharmacy = 1
         /// 口罩，Mask = 2
         /// </param>
+        /// <param name="page">第幾頁</param>
+        /// <param name="pageSize">每頁幾筆</param>
         /// <returns></returns>
         [HttpGet("v1/[controller]/SearchPharmacyMaskByKeyword")]
-        public async Task<ActionResult<PharmacyMaskSearchResultViewModel>> SearchPharmacyMaskByKeyword([FromQuery][Required]string keyword, [FromQuery][Required]PharmacyMaskSearchType pharmacyMaskSearchType = PharmacyMaskSearchType.All)
+        public async Task<ActionResult<PharmacyMaskSearchResultViewModel>> SearchPharmacyMaskByKeyword([FromQuery][Required]string keyword, [FromQuery][Required]PharmacyMaskSearchType pharmacyMaskSearchType = PharmacyMaskSearchType.All,[FromQuery][Required] int page = 1, [FromQuery][Required] int pageSize = 5)
         {
-            var result = await _pharmacyMaskHandleService.SearchPharmacyMaskByKeyword(keyword, pharmacyMaskSearchType);
+            var result = await _pharmacyMaskHandleService.SearchPharmacyMaskByKeyword(keyword, pharmacyMaskSearchType, page, pageSize);
             return Ok(result);
         }
 

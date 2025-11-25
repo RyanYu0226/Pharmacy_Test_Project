@@ -9,7 +9,7 @@ namespace T4U_Pharmacy_Common_Model.ViewModel
     /// <summary>
     /// 藥局口罩搜尋結果ViewModel
     /// </summary>
-    public class PharmacyMaskSearchResultViewModel : ResultViewModel
+    public class PharmacyMaskSearchResultViewModel : ListResultViewModel
     {
         /// <summary>
         /// 資料

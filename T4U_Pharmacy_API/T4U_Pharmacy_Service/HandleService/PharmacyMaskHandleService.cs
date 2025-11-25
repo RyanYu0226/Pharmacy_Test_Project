@@ -90,12 +90,15 @@ namespace T4U_Pharmacy_Service
         /// </summary>
         /// <param name="keyword">關鍵字</param>
         /// <param name="pharmacyMaskSearchType">類型</param>
+        /// <param name="page">類型</param>
+        /// <param name="pageSize">類型</param>
         /// <returns></returns>
-        public async Task<PharmacyMaskSearchResultViewModel> SearchPharmacyMaskByKeyword(string keyword, PharmacyMaskSearchType pharmacyMaskSearchType)
+        public async Task<PharmacyMaskSearchResultViewModel> SearchPharmacyMaskByKeyword(string keyword, PharmacyMaskSearchType pharmacyMaskSearchType, int page = 1, int pageSize = 5)
         {
             PharmacyMaskSearchResultViewModel result = new PharmacyMaskSearchResultViewModel();
             result.Result = true;
             List<PharmacyMaskSearchResult> results = new List<PharmacyMaskSearchResult>();
+            var totalCount = 0;
             switch (pharmacyMaskSearchType)
             {
                 case PharmacyMaskSearchType.All:
@@ -105,6 +108,7 @@ namespace T4U_Pharmacy_Service
                     var masks = await _masksService.GetAll().Where(n => n.Name.Contains(keyword))
                         .Select(n => new { Id = n.MasksId, Name = n.Name, Type = PharmacyMaskSearchType.Mask.ToString() })
                         .ToListAsync();
+                    totalCount = pharmacies.Count + masks.Count; 
                     results = pharmacies.Concat(masks)
                         .Select(item => new PharmacyMaskSearchResult
                         {
@@ -115,13 +119,18 @@ namespace T4U_Pharmacy_Service
                         })
                         .Where(x => x.Relevance > 0)
                         .OrderByDescending(x => x.Relevance)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
                         .ToList();
                     break;
                 case PharmacyMaskSearchType.Pharmacy:
                     var pharmaciesList = await _pharmacyService.GetAll()
                         .Where(p => p.Name.Contains(keyword))
                         .Select(p => new { p.PharmacyId, p.Name })
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
                         .ToListAsync();
+                    totalCount = pharmaciesList.Count;
                     results = pharmaciesList
                         .Select(p => new PharmacyMaskSearchResult
                         {
@@ -132,12 +141,15 @@ namespace T4U_Pharmacy_Service
                         })
                         .Where(x => x.Relevance > 0)
                         .OrderByDescending(x => x.Relevance)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
                         .ToList();
                     break;
                 case PharmacyMaskSearchType.Mask:
                     var masksList = await _masksService.GetAll().Where(n => n.Name.Contains(keyword))
                         .Select(n => new { n.MasksId, n.Name })
                         .ToListAsync();
+                    totalCount = masksList.Count;
                     results = masksList
                         .Select(p => new PharmacyMaskSearchResult
                         {
@@ -148,11 +160,14 @@ namespace T4U_Pharmacy_Service
                         })
                         .Where(x => x.Relevance > 0)
                         .OrderByDescending(x => x.Relevance)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
                         .ToList();
                     break;
                     
             }
             result.Data = results;
+            result.pageInfo = new ListResultViewModel().GetPageInfo(page, pageSize, totalCount);
             return result;
         }
 
