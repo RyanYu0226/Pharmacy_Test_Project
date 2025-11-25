@@ -25,8 +25,8 @@ namespace T4U_Pharmacy_Web_API.Controllers
         /// <summary>
         /// 顯示在指定日期區間內，購買口罩金額最高的前 N 名使用者 API
         /// </summary>
-        /// <param name="startDate">開始日期</param>
-        /// <param name="endDate">結束日期</param>
+        /// <param name="startDate">開始日期，格式yyyy/MM/dd，EX：2024/01/05</param>
+        /// <param name="endDate">結束日期，格式yyyy/MM/dd，EX：2024/12/31</param>
         /// <param name="limit">購買口罩金額最高的前 N 名使用者</param>
         /// <returns></returns>
         [HttpGet("v1/[controller]/GetTopCustomerPurchaseHistory")]
