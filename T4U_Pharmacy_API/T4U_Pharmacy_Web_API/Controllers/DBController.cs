@@ -16,6 +16,10 @@ namespace T4U_Pharmacy_Web_API.Controllers
             _dbService = dbService;
         }
 
+        /// <summary>
+        /// 初始化資料庫資料
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("v1/[controller]/InitDBData")]
         public async Task<ActionResult<ResultViewModel>> InitDBData()
         {
