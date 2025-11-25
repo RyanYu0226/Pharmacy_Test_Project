@@ -59,6 +59,21 @@ namespace T4U_Pharmacy_Common_Model.Common
             /// </summary>
             Between = 2
         }
+
+        /// <summary>
+        /// 查詢類型
+        /// </summary>
+        public enum QueryType
+        {
+            /// <summary>
+            /// 或
+            /// </summary>
+            Or = 0,
+            /// <summary>
+            /// 和
+            /// </summary>
+            And = 1
+        }
     }
     /// <summary>
     /// 系統設定KEY

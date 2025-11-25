@@ -19,6 +19,7 @@ namespace T4U_Pharmacy_Web_API.Controllers
         /// 初始化
         /// </summary>
         /// <param name="pharmacyService"></param>
+        /// <param name="pharmacyMasksService"></param>
         public PharmacyController(PharmacyService pharmacyService, PharmacyMasksService pharmacyMasksService)
         {
             _pharmacyService = pharmacyService;
@@ -30,11 +31,14 @@ namespace T4U_Pharmacy_Web_API.Controllers
         /// </summary>
         /// <param name="dayOfWeek">營業日，0~6，EX: 0 => 星期日、1 => 星期一...</param>
         /// <param name="hourTime">營業時間，格式HH:mm，24小時制，EX: 09:05</param>
+        /// <param name="queryType">查詢條件類型，0：or，1：and</param>
+        /// <param name="page">目前顯示第幾頁</param>
+        /// <param name="pageSize">每頁筆數</param>
         /// <returns></returns>
         [HttpGet("v1/[controller]/GetPharmacies")]
-        public async Task<ActionResult<PharmacyViewModel>> GetPharmacies([FromQuery] string dayOfWeek = "", [FromQuery]string hourTime = "")
+        public async Task<ActionResult<PharmacyViewModel>> GetPharmacies([FromQuery] string dayOfWeek = "", [FromQuery] string hourTime = "", [FromQuery] QueryType queryType = QueryType.Or, [FromQuery][Required] int page = 1, [FromQuery][Required] int pageSize = 5)
         {
-            var data = await _pharmacyService.GetPharmacies(dayOfWeek, hourTime);
+            var data = await _pharmacyService.GetPharmacies(dayOfWeek, hourTime, queryType, page, pageSize);
             return Ok(data);
         }
 

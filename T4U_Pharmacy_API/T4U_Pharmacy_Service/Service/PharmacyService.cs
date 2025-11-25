@@ -9,6 +9,7 @@ using T4U_Pharmacy_Repository.DBModels;
 using T4U_Pharmacy_Repository.Infrastructure;
 using T4U_Pharmacy_Repository.Interface;
 using T4U_Pharmacy_Service.BaseService;
+using static T4U_Pharmacy_Common_Model.Common.CommonStruct;
 
 namespace T4U_Pharmacy_Service
 {
@@ -26,8 +27,11 @@ namespace T4U_Pharmacy_Service
         /// </summary>
         /// <param name="dayOfWeek">營業日</param>
         /// <param name="hourTime">營業時間</param>
+        /// <param name="queryType">查詢條件</param>
+        /// <param name="page">顯示第幾頁</param>
+        /// <param name="pageSize">每頁筆數</param>
         /// <returns></returns>
-        public async Task<PharmacyViewModel> GetPharmacies(string dayOfWeek, string hourTime)
+        public async Task<PharmacyViewModel> GetPharmacies(string dayOfWeek, string hourTime, QueryType queryType = QueryType.Or, int page = 1, int pageSize = 5)
         {
             PharmacyViewModel obj = new PharmacyViewModel();
             obj.Result = true;
@@ -55,19 +59,36 @@ namespace T4U_Pharmacy_Service
                 if (!string.IsNullOrEmpty(dayOfWeek) && !string.IsNullOrEmpty(hourTime))
                 {
                     var iDayOfWeek = int.Parse(dayOfWeek);
-                    pharmacies = pharmacies.Where(
-                        n => n.PharmacyOpeningHours.Any(
-                            o =>
-                            (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
-                            ||
-                            (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
-                            )
-                    );
+                    if (queryType == QueryType.And)
+                    {
+                        pharmacies = pharmacies.Where(
+                            n => n.PharmacyOpeningHours.Any(
+                                o =>
+                                (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
+                                ||
+                                (o.Weekday == iDayOfWeek && o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
+                                )
+                        );
+                    }
+                    else
+                    {
+                        pharmacies = pharmacies.Where(
+                            n => n.PharmacyOpeningHours.Any(
+                                o =>
+                                o.Weekday == iDayOfWeek
+                                ||
+                                (o.OpenTime.CompareTo(o.CloseTime) <= 0 && o.OpenTime.CompareTo(hourTime) <= 0 && o.CloseTime.CompareTo(hourTime) >= 0)
+                                ||
+                                (o.OpenTime.CompareTo(o.CloseTime) > 0 && (o.OpenTime.CompareTo(hourTime) <= 0 || o.CloseTime.CompareTo(hourTime) >= 0))
+                                )
+                        );
+                    }
                 }
 
                 var listDetail = pharmacies.Select(n => new { n.PharmacyId, n.Name, n.PharmacyOpeningHours });
-
-                var list = await listDetail.ToListAsync();
+                var totalCount = listDetail.Count();
+                obj.pageInfo = new ListResultViewModel().GetPageInfo(page, pageSize, totalCount);
+                var list = await listDetail.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 var details = new List<PharmacyDetail>();
                 foreach (var item in list)
                 {
