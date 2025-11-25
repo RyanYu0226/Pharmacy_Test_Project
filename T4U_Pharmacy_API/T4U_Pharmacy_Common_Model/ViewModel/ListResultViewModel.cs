@@ -28,7 +28,7 @@ namespace T4U_Pharmacy_Common_Model.ViewModel
         public PaginationInfo GetPageInfo(int pageIndex, int pageSize, int totalCount)
         {
             int totalPage = totalCount / pageSize;
-            if (totalCount % pageSize > 0) totalCount += 1;
+            if (totalCount % pageSize > 0) totalPage += 1;
             PaginationInfo result = new PaginationInfo
             {
                 Page = pageIndex,

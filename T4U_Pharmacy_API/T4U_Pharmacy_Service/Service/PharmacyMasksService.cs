@@ -36,55 +36,91 @@ namespace T4U_Pharmacy_Service
         /// <param name="quantityMin">口罩數量下限</param>
         /// <param name="quantityMax">口罩數量上限</param>
         /// <returns></returns>
-        public async Task<MaskDetailViewModel> GetPharmaciesByMaskStock(decimal? priceMin, decimal? priceMax, int? quantityMin, int? quantityMax, QuantityThresholdType quantityThresholdType = QuantityThresholdType.Above)
+        public async Task<MaskDetailViewModel> GetPharmaciesByMaskStock(decimal? priceMin, decimal? priceMax, int? quantityMin, int? quantityMax, QuantityThresholdType quantityThresholdType = QuantityThresholdType.Above, int page = 1, int pageSize = 5)
         {
             MaskDetailViewModel obj = new MaskDetailViewModel();
             obj.Result = true;
-            try
+            obj.Message = VaildGetPharmaciesByMaskStock(quantityMin, quantityMax, quantityThresholdType);
+            if (string.IsNullOrEmpty(obj.Message))
             {
-                var pharmacies = this.repository.GetAll();
-                if (priceMin.HasValue)
+                try
                 {
-                    pharmacies = pharmacies.Where(n =>  n.Price >= priceMin.Value);
-                }
-                if (priceMax.HasValue)
-                {
-                    pharmacies = pharmacies.Where(n => n.Price <= priceMax.Value);
-                }
-                switch(quantityThresholdType)
-                {
-                    case QuantityThresholdType.Above:
-                        pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) >= quantityMin.Value);
-                        break;
-                    case QuantityThresholdType.Below:
-                        pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) <= quantityMax.Value);
-                        break;
-                    case QuantityThresholdType.Between:
-                        pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) >= quantityMin.Value && n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) <= quantityMax.Value);
-                        break;
-                }
-
-                var details = await pharmacies.Select(
-                    n => new MaskDetail 
+                    var pharmacies = this.repository.GetAll();
+                    if (priceMin.HasValue)
                     {
-                        PharmacyId = n.PharmacyId,
-                        PharmacyName = n.Pharmacy.Name,
-                        MasksId = n.MasksId,
-                        MasksName = n.Masks.Name,
-                        Price = n.Price,
-                        StockQuantity = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity)
+                        pharmacies = pharmacies.Where(n => n.Price >= priceMin.Value);
                     }
-                    ).ToListAsync();
-                obj.Data = details;
+                    if (priceMax.HasValue)
+                    {
+                        pharmacies = pharmacies.Where(n => n.Price <= priceMax.Value);
+                    }
+                    switch (quantityThresholdType)
+                    {
+                        case QuantityThresholdType.Above:
+                            pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) >= quantityMin.Value);
+                            break;
+                        case QuantityThresholdType.Below:
+                            pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) <= quantityMax.Value);
+                            break;
+                        case QuantityThresholdType.Between:
+                            pharmacies = pharmacies.Where(n => n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) >= quantityMin.Value && n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) <= quantityMax.Value);
+                            break;
+                    }
+
+                    var totalCount = pharmacies.Count();
+
+                    var details = await pharmacies.Select(
+                        n => new MaskDetail
+                        {
+                            PharmacyId = n.PharmacyId,
+                            PharmacyName = n.Pharmacy.Name,
+                            MasksId = n.MasksId,
+                            MasksName = n.Masks.Name,
+                            Price = n.Price,
+                            StockQuantity = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity)
+                        }
+                        ).Skip((page -1) * pageSize).Take(pageSize)
+                        .ToListAsync();
+                    obj.Data = details;
+                    obj.pageInfo = new ListResultViewModel().GetPageInfo(page,pageSize,totalCount);
+                }
+                catch (Exception ex)
+                {
+                    string message = "發生意外錯誤";
+                    obj.Result = false;
+                    obj.Message = message;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                string message = "發生意外錯誤";
                 obj.Result = false;
-                obj.Message = message;
             }
             return obj;
         }
 
+        /// <summary>
+        /// 檢驗GetPharmaciesByMaskStock Input
+        /// </summary>
+        /// <param name="quantityMin"></param>
+        /// <param name="quantityMax"></param>
+        /// <param name="quantityThresholdType"></param>
+        /// <returns></returns>
+        private string VaildGetPharmaciesByMaskStock(int? quantityMin, int? quantityMax, QuantityThresholdType quantityThresholdType = QuantityThresholdType.Above)
+        {
+            string result = string.Empty;
+            if (quantityThresholdType == QuantityThresholdType.Above && !quantityMin.HasValue)
+            {
+                return "quantityMin為必填";
+            }
+            if (quantityThresholdType == QuantityThresholdType.Below && !quantityMax.HasValue)
+            {
+                return "quantityMax為必填";
+            }
+            if (quantityThresholdType == QuantityThresholdType.Between && !quantityMin.HasValue && !quantityMax.HasValue)
+            {
+                return "quantityMin和quantityMax為必填";
+            }
+            return result;
+        }
     }
 }

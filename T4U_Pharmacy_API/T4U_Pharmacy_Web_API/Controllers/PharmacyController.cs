@@ -49,12 +49,19 @@ namespace T4U_Pharmacy_Web_API.Controllers
         /// <param name="priceMax">最高價錢</param>
         /// <param name="quantityMin">口罩數量下限</param>
         /// <param name="quantityMax">口罩數量上限</param>
-        /// <param name="quantityThresholdType">口罩數量高於、低於、之間</param>
+        /// <param name="quantityThresholdType">
+        /// 口罩數量，0：高於、1：低於、2：之間
+        /// 選擇高於，則quantityMin必填
+        /// 選擇低於，則quantityMax必填
+        /// 選擇之間，則quantityMin和quantityMax必填
+        /// </param>
+        /// <param name="page">第幾頁</param>
+        /// <param name="pageSize">每頁筆數</param>
         /// <returns></returns>
         [HttpGet("v1/[controller]/GetPharmaciesByMaskStock")]
-        public async Task<ActionResult<MaskDetailViewModel>>GetPharmaciesByMaskStock([FromQuery][Required] decimal priceMin, [FromQuery][Required] decimal priceMax, [FromQuery] int? quantityMin, [FromQuery] int? quantityMax, [FromQuery][Required] QuantityThresholdType quantityThresholdType = QuantityThresholdType.Above)
+        public async Task<ActionResult<MaskDetailViewModel>>GetPharmaciesByMaskStock([FromQuery][Required] decimal priceMin, [FromQuery][Required] decimal priceMax, [FromQuery] int? quantityMin, [FromQuery] int? quantityMax, [FromQuery][Required] QuantityThresholdType quantityThresholdType = QuantityThresholdType.Above, int page = 1, int pageSize = 5)
         {
-            var data = await _pharmacyMasksService.GetPharmaciesByMaskStock(priceMin, priceMax, quantityMin, quantityMax, quantityThresholdType);
+            var data = await _pharmacyMasksService.GetPharmaciesByMaskStock(priceMin, priceMax, quantityMin, quantityMax, quantityThresholdType, page, pageSize);
             return Ok(data);
         }
     }
