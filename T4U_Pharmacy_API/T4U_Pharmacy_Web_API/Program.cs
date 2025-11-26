@@ -99,7 +99,7 @@ app.Use(async (context, next) =>
             "style-src 'self'; " +
             "img-src 'self';";
     }
-
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
     await next();
 });
 
