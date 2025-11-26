@@ -285,11 +285,20 @@ namespace T4U_Pharmacy_Service
             {
                 return string.Format("口罩至少要有一筆資料");
             }
-            //檢查調整價錢庫存後，剩餘金額是否不足
+            
             var maskNameList = input.Masks.Select(n => n.MaskName).Distinct().ToList();
             var pharmacyMasks = _pharmacyMasksService.GetAll().Where(n => n.PharmacyId == pharmacyId)
                 .Select(n => new { n.Masks.Name, Stock = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) })
                 .ToList();
+            //檢查MaskName是否有不合規的內容
+            foreach ( var maskName in maskNameList )
+            {
+                if(maskName.Length > 150)
+                {
+                    return string.Format("口罩名稱字數不可超過150字元，名稱：{0}", maskName);
+                }
+            }
+            //檢查調整價錢庫存後，剩餘金額是否不足
             var currentCashBalance = GetPharmacyCurrentCashBalance(pharmacyId);
             decimal totalCash = 0;
             foreach(var updateMask in input.Masks)
