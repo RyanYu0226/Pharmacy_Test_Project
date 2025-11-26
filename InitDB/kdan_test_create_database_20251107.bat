@@ -6,7 +6,7 @@ REM ==============================
 SET PGHOST=192.168.2.25
 SET PGPORT=5432
 SET PGUSER=postgres
-SET PGPASSWORD=corecore
+SET PGPASSWORD=xxxxxxx
 SET TESTUSER=kdan_pharmacy_db
 SET TESTPASS=pharmacydb@1234
 
