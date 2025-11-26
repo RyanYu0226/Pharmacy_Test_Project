@@ -4,6 +4,19 @@
 3. PostgreSQL
 4. Docker
 
+## 資料庫建立
+資料庫為PostgreSQL
+可透過/initDB/kdan_test_create_database_20251107.bat(.sh)建立DB和Table，但須要把對應參數內容作調整
+1.PGHOST=192.168.2.25  => 對應資料庫IP
+2.PGPORT=5432  =>  對應Port
+3.PGUSER=postgres  => 建立資料庫和使用者所要使用的帳號，這邊使用PostgreSQL預設最大權限帳號
+4.PGPASSWORD=xxxxxxxx =>  對應第3項的帳號密碼
+5.TESTUSER=kdan_pharmacy_db  =>  對應要新增的資料庫使用者帳號，這邊不用調整
+6.TESTPASS=pharmacydb@1234  =>  對應新增資料庫使用者帳號密碼，這邊不用調整
+7.DB_NAME=KDAN_TEST  =>  對應新增資料庫名稱，不用調整
+8.CREATE_DB_SQL=.\kdan_test_database_create_20251107.sql  =>  建立DB和使用者的SQL語法，請確認執行的路徑是否對應
+9.CREATE_TABLES_SQL=.\kdan_test_table_create_20251107.sql  =>  建立Table的SQL語法，請確認執行的路徑是否對應
+
 ## API需求
 * [ ] List pharmacies, optionally filtered by specific time and/or day of the week.
   * 在/api/v1/Pharmacy/GetPharmacies 取得藥局資訊
@@ -24,6 +37,7 @@
 
 ## API Document
 本專案使用Swagger，內容在/swagger/index.html
+測試網站：https://kdan_pharmacy_mask.think4u-tech.com/swagger/index.html
 
 ## Import Data Commands
 資料初始化的部分，可以透過API執行(/api/v1/DB/InitDBData)，將資料還原
@@ -54,6 +68,7 @@ docker compose -f docker-compose.yml down
 docker compose -f docker-compose.yml up -d
 
 預設網站建置在該環境8080 port
+
 
 ## Additional Data
 DB_SCHEMA => DB_SCHEMA_20251105.xlsx
