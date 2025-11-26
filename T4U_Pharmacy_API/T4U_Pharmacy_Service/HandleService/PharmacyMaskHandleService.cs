@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using T4U_Pharmacy_Common_Model;
 using T4U_Pharmacy_Common_Model.Common;
 using T4U_Pharmacy_Common_Model.ViewModel;
@@ -291,11 +293,16 @@ namespace T4U_Pharmacy_Service
                 .Select(n => new { n.Masks.Name, Stock = n.PharmacyMasksStockLogs.Sum(s => s.StockQuantity) })
                 .ToList();
             //檢查MaskName是否有不合規的內容
+            Regex maskNameRegex = new Regex(@"^[a-zA-Z0-9\s\-\(\)]+$");
             foreach ( var maskName in maskNameList )
             {
                 if(maskName.Length > 150)
                 {
                     return string.Format("口罩名稱字數不可超過150字元，名稱：{0}", maskName);
+                }
+                else if(!maskNameRegex.IsMatch(maskName))
+                {
+                    return string.Format("口罩名稱內容只能為大小寫英文、數字、空白、減號 dash、左右括號，名稱：{0}", maskName);
                 }
             }
             //檢查調整價錢庫存後，剩餘金額是否不足
