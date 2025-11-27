@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using T4U_Pharmacy_Repository.DBModels;
@@ -100,8 +101,15 @@ app.Use(async (context, next) =>
             "img-src 'self';";
     }
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["Strict-Transport-Security"] =
+        "max-age=31536000; includeSubDomains";
     await next();
 });
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
 
 app.MapControllers();
 
