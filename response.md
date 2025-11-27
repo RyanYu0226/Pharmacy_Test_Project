@@ -52,6 +52,8 @@
 6. PurchaseHistoryServiceTests
 
 覆蓋率報告位於路徑/T4U_Pharmacy_API/T4U_Pharmacy_Web_API_UnitTest/TestResults/coveragereport/index.html  
+覆蓋率報告，沒覆蓋到的部分為DB相關的部分，因為API使用上不會使用到所有Table，所以在測試覆蓋率上會有缺  
+  
 P.S. 如需自己產出，可使用以下指令產出報告的XML檔案，並透過ReportGenerator工具產程html報告  
 1. 在/T4U_Pharmacy_API/T4U_Pharmacy_Web_API_UnitTest資料夾下 `dotnet test --collect:"XPlat Code Coverage"`  
 =>產出 xml檔案，會放在在TestResults/{GUID}/coverage.cobertura.xml
