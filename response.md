@@ -52,6 +52,13 @@ PurchaseHandlerServiceTests
 PurchaseHistoryServiceTests
 
 覆蓋率報告位於路徑/T4U_Pharmacy_API/T4U_Pharmacy_Web_API_UnitTest/TestResults/coveragereport/index.html
+P.S. 如需自己產出，可使用以下指令產出報告的XML檔案，並透過ReportGenerator工具產程html報告
+1. 在/T4U_Pharmacy_API/T4U_Pharmacy_Web_API_UnitTest資料夾下 dotnet test --collect:"XPlat Code Coverage" 
+=>產出 xml檔案，會放在在TestResults/{GUID}/coverage.cobertura.xml
+2. dotnet tool install -g dotnet-reportgenerator-globaltool  => 安裝ReportGenerator，如果已有，此步驟可以跳過
+3. reportgenerator -reports:"XML檔案位置" -targetdir:"輸出檔案資料夾位置"
+EX: reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"coveragereport"
+
 
 ## Deployment
 此專案可透過Docker建立，執行以下程式，產出對應image和tar檔案
